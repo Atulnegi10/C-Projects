@@ -9,8 +9,6 @@
 #define MAX_QUES_LEN 300
 #define MAX_OPTION_LEN 100
 
-volatile int timeout_happened = 0;
-
 const char* COLOR_END = "\033[0m";
 const char* RED = "\033[1;31m";
 const char* GREEN = "\033[1;32m";
@@ -46,29 +44,17 @@ int main() {
   exit(0);
 }
 
-void timeout_handler() {
-  timeout_happened = 1;
-  printf("%s\n\nTime out!!!!!  Press Any Key...%s\n", RED, COLOR_END);
-  fflush(stdout);
-}
 
 void play_game(Question* questions, int no_of_questions) {
   int money_won = 0;
   int lifeline[] = {1, 1};
 
-  signal(SIGALRM, timeout_handler);
-
   for (int i = 0; i < no_of_questions; i++) {
     print_formatted_question(questions[i]);
-    alarm(questions[i].timeout);
     char ch = getchar();
     alarm(0);
     printf("%c", ch);
     ch = toupper(ch);
-
-    if (timeout_happened == 1) {
-      break;
-    }
 
     if (ch == 'L') {
       int value = use_lifeline(&questions[i], lifeline);
@@ -88,6 +74,7 @@ void play_game(Question* questions, int no_of_questions) {
     }
   }
   printf("\n\n%sGame Over! Your total winnings are: Rs %d%s\n", BLUE,  money_won, COLOR_END);
+  printf("Developed by :Atul Negi!!");
 }
 
 int use_lifeline(Question* question, int* lifeline) {
